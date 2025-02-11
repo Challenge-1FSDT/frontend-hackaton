@@ -12,7 +12,7 @@ export default function Subject() {
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState<{ id: string; name: string } | null>(null);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!api.AuthService.isAuthenticated()) {
       router.push("/");
       return;
@@ -24,15 +24,14 @@ export default function Subject() {
       return;
     }
 
-    api.SubjectService.getSubject(selectedSubject)
-      .then((data) => {
-        setSubject(data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar disciplina:", error);
-        setLoading(false);
-      });
+    try {
+      const { data } = await api.SubjectService.getSubject(selectedSubject)
+      setSubject(data.data);
+    } catch(error) {
+      console.error("Erro ao buscar disciplina:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [router]);
 
   return (
