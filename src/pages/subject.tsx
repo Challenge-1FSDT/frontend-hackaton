@@ -9,7 +9,7 @@ export default function Subject() {
   // select subject from api
   // display subject content
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [subject, setSubject] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
