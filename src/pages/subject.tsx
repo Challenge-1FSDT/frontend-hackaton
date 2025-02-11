@@ -9,7 +9,7 @@ export default function Subject() {
   // select subject from api
   // display subject content
   const router = useRouter();
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
@@ -41,10 +41,12 @@ export default function Subject() {
       
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6">
-          <h2 className="text-xl font-semibold text-indigo-400">{subject?.name}</h2>
-          <p className="mt-2 text-gray-300">Aqui ficará o conteúdo da matéria.</p>
-        </main>
+        {!loading && (
+          <main className="flex-1 p-6">
+            <h2 className="text-xl font-semibold text-indigo-400">{subject?.name}</h2>
+            <p className="mt-2 text-gray-300">Aqui ficará o conteúdo da matéria.</p>
+          </main>
+        )}
       </div>
 
       <Footer />
