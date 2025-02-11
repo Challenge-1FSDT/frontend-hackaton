@@ -9,23 +9,20 @@ export default function Schools() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!api.AuthService.isAuthenticated()) {
       router.push("/");
       return;
     }
 
-    api.SchoolService.getSchools()
-      .then((data) => {        
-        const allSchools = data.data;
-        
-        setSchools(allSchools);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar escolas:", error);
-        setLoading(false);
-      });
+    try {
+      const { data } = await api.SchoolService.getSchools()
+      setSchools(data);
+    } catch(error) {
+      console.error("Erro ao buscar escolas:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [router]);
 
   const handleSelectSchool = (schoolId: string) => {
