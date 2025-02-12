@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Header() {
   return (
@@ -10,15 +9,6 @@ export default function Header() {
           <span className="text-indigo-500">ON</span>
         </h1>
       </Link>
-        <nav className="flex items-center space-x-6">
-          <Image
-            src="https://randomuser.me/api/portraits/men/1.jpg"
-            alt="User Avatar"
-            width={40}
-            height={40}
-            className="rounded-full border-2 border-indigo-500"
-          />
-        </nav>
       </header>
   );
 };

@@ -21,8 +21,6 @@ export default function Classrooms() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  console.log(classrooms);
-
   useEffect(() => {
     ClassroomsService.getClassrooms()
       .then((data) => {

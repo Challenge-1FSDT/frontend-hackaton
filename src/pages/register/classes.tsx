@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { ClassesService } from "@/services/ClassesService";
 import AlertPopup from "@/components/AlertPopup";
+import Modal from "@/components/Modal";
 
 const classesTabs = [
   { name: "Salas", path: "/register/classrooms" },
@@ -19,15 +20,40 @@ const classesTabs = [
 ];
 
 export default function Classes() {
-  const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
+  const [classes, setClasses] = useState<{ id: string; name: string; startAt: string; endAt: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "warning" | "info" } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [startAt, setStartAt] = useState("");
+  const [endAt, setEndAt] = useState("");
   const router = useRouter();
+
+  const convertToISOString = (date: string) => {
+    const dateObject = new Date(date);
+    return dateObject.toISOString();
+  }
+
+  const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const handleStartAt = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStartAt(convertToISOString(e.target.value));
+  };
+
+  const handleEndAt = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndAt(convertToISOString(e.target.value));
+  };
 
   useEffect(() => {
     ClassesService.getClasses()
       .then((data) => {
-        const allClasses = data.data;
+        const allClasses = data.data.map((cls: { id: string; name: string; startAt?: string; endAt?: string }) => ({
+          ...cls,
+          startAt: cls.startAt || "",
+          endAt: cls.endAt || ""
+        }));
         
         setClasses(allClasses);
         setLoading(false);
@@ -49,6 +75,20 @@ export default function Classes() {
       });
   };
 
+  const handleWithCreateClass = (name: string) => {
+    ClassesService.createClass(name, startAt, endAt)
+      .then(() => {
+        setClasses([...classes, {
+          name, startAt, endAt,
+          id: ""
+        }]);
+        setAlert({ message: "Classe criada com sucesso!", type: "success" });
+      })
+      .catch((error) => {
+        console.error("Erro ao criar classe:", error);
+      });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0a1a] text-white">
       <Header />
@@ -60,29 +100,28 @@ export default function Classes() {
           <div className="flex space-x-6 border-b border-gray-700">
             <Tabs tabs={classesTabs} />
           </div>
-          {/* list classes */}
           <div className="pt-6 h-full">
             {loading ? (
               <p className="text-white text-center">Carregando...</p>
             ) : (
               <div className="space-y-4">
-                {classes.map((classroom) => (
-                  <div key={classroom.id} className="flex items-center justify-between bg-[#544B8F] p-4 rounded-md">
+                {classes.map((clas) => (
+                  <div key={clas.id} className="flex items-center justify-between bg-[#544B8F] p-4 rounded-md">
                     <Link 
                       href={`/register/classes/students`} 
-                      key={classroom.id} 
+                      key={clas.id} 
                       className="flex items-center justify-between w-full"
                       onClick={() => {
-                        ClassesService.selectClassId(classroom.id)
-                        ClassesService.selectClassName(classroom.name)
+                        ClassesService.selectClassId(clas.id)
+                        ClassesService.selectClassName(clas.name)
                       }}
                     >
-                      <p>{classroom.name}</p>
+                      <p>{clas.name}</p>
                     </Link>
                       <DropdownMenu
-                        onEdit={() => router.push(`/register/classes/${classroom.id}`)}
+                        onEdit={() => router.push(`/register/classes/${clas.id}`)}
                         onDelete={() => {
-                          handleDeleteClass(classroom.id);
+                          handleDeleteClass(clas.id);
                         }}
                       />
                   </div>
@@ -90,8 +129,7 @@ export default function Classes() {
               </div>
             )}
           </div>
-
-          <FloatingButton onClick={() => console.log("Botão clicado!")}/>
+          <FloatingButton onClick={() => {setIsModalOpen(true)}}/>
           {alert && (
             <AlertPopup 
               message={alert.message} 
@@ -100,12 +138,48 @@ export default function Classes() {
             />
           )}
 
+          <Modal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            title="Criar Classe"
+            onSave={() => {
+              handleWithCreateClass(name);
+              setIsModalOpen(false);
+            }}
+          >
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium">Nome:</label>
+              <input 
+                type="text" 
+                className="w-full p-2 rounded bg-gray-700 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                placeholder="Digite o nome da aula..."
+                onChange={handleName}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <div className="w-1/2">
+                <label className="text-sm font-medium">Início:</label>
+                <input 
+                  type="datetime-local" 
+                  className="w-full p-2 rounded bg-gray-700 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  onChange={handleStartAt}
+                />
+              </div>
+              <div className="w-1/2">
+                <label className="text-sm font-medium">Fim:</label>
+                <input 
+                  type="datetime-local" 
+                  className="w-full p-2 rounded bg-gray-700 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  onChange={handleEndAt}
+                />
+              </div>
+            </div>
+            </div>
+          </Modal>
         </main>
-
-
-      </div>
-        <Footer />
     </div>
+    <Footer />
+  </div>
   )
-
 }

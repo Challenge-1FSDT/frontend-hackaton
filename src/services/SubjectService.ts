@@ -33,7 +33,7 @@ export const SubjectService = {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-
+      
       if (!response.ok) {
         throw new Error('Erro ao buscar disciplina');
       }
@@ -43,5 +43,41 @@ export const SubjectService = {
       console.error('Erro ao buscar disciplina:', error);
       return { id: '', name: '' };
     }
-  }
+  },
+  
+  async createSubject(name: string, description: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}subjects?schoolId=${localStorage.getItem('selectedSchool')}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        body: JSON.stringify({ name, description, schoolId: localStorage.getItem('selectedSchool') }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao criar disciplina');
+      }
+    } catch (error) {
+      console.error('Erro ao criar disciplina:', error);
+    }
+  },
+
+  async deleteSubject(subjectId: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}subjects/${subjectId}?schoolId=${localStorage.getItem('selectedSchool')}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao deletar disciplina');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar disciplina:', error);
+    }
+  },
 };

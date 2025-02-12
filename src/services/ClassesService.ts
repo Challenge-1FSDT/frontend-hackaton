@@ -61,9 +61,9 @@ export const ClassesService = {
     }
   },
 
-  async createClass(name: string): Promise<void> {
+  async createClass(name: string, startAt: string, endAt: string): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}classes`, {
+      const response = await fetch(`${API_BASE_URL}classes?schoolId=${localStorage.getItem('selectedSchool')}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,6 +71,8 @@ export const ClassesService = {
         },
         body: JSON.stringify({
           name,
+          startAt,
+          endAt,
           schoolId: localStorage.getItem('selectedSchool'),
         }),
       });
