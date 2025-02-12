@@ -61,6 +61,45 @@ export const ClassesService = {
     }
   },
 
+  async createClass(name: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}classes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        body: JSON.stringify({
+          name,
+          schoolId: localStorage.getItem('selectedSchool'),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao criar classe');
+      }
+    } catch (error) {
+      console.error('Erro ao criar classe:', error);
+    }
+  },
+
+  async deleteClass(classId: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}classes/${classId}?schoolId=${localStorage.getItem('selectedSchool')}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao deletar classe');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar classe:', error);
+    }
+  },
+
   async selectClassId(classId: string): Promise<void> {
     localStorage.setItem('selectedClass', classId);
   },

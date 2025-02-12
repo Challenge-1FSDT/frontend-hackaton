@@ -11,7 +11,7 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { ClassesService } from "@/services/ClassesService";
 
-const registerTabs = [
+const studentsTabs = [
   { name: "Alunos", path: "/register/classes/students" },
   { name: "Aulas", path: "/register/classes/lectures" },
 ];
@@ -25,9 +25,6 @@ export default function Students() {
     ClassesService.getStudents()
       .then((data) => {
         const allStudents = data.data;
-
-        console.log(allStudents);
-        
         setStudents(allStudents);
         setLoading(false);
       })
@@ -46,10 +43,9 @@ export default function Students() {
 
         <main className="flex-1 p-6">
           <div className="flex space-x-6 border-b border-gray-700">
-            <Tabs tabs={registerTabs} />
+            <Tabs tabs={studentsTabs} />
           </div>
-          {/* title of the page with the class name */}
-          <h1 className="text-2xl font-semibold mt-6"></h1>
+          <h1 className="text-2xl font-semibold mt-6 text-white">{localStorage.getItem('selectedClassName')}</h1>
           <div className="pt-6 h-full">
             {loading ? (
               <p className="text-white text-center">Carregando...</p>

@@ -9,7 +9,7 @@ export default function Sidebar() {
   const menuItems = [
     { href: '/dashboard', label: 'Home' },
     { href: '/register', label: 'Cadastro' },
-    // { href: '/subjects', label: 'Aulas' },
+    { href: '/lecturesList', label: 'Aulas' },
     { href: '/campus', label: 'Campus' },
   ];
 

@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '../services/api';
 
 export const SchoolMembersService = {
-  async getSchoolMembers(): Promise<{ data: { id: string; name: string; role: string }[] }> {
+  async getSchoolMembers(): Promise<{ data: { id: string; firstName: string; role: string }[] }> {
     try {
       const response = await fetch(`${API_BASE_URL}schools/${localStorage.getItem('selectedSchool')}/members`, {
         method: 'GET',

@@ -9,8 +9,9 @@ import FloatingButton from "@/components/FloatingButton";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { ClassesService } from "@/services/ClassesService";
+import AlertPopup from "@/components/AlertPopup";
 
-const registerTabs = [
+const classesTabs = [
   { name: "Salas", path: "/register/classrooms" },
   { name: "Classes", path: "/register/classes" },
   { name: "Membros", path: "/register/schoolMembers" },
@@ -20,6 +21,7 @@ const registerTabs = [
 export default function Classes() {
   const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "warning" | "info" } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +38,17 @@ export default function Classes() {
       });
   }, []);
 
+  const handleDeleteClass = (classId: string) => {
+    ClassesService.deleteClass(classId)
+      .then(() => {
+        setClasses(classes.filter((classroom) => classroom.id !== classId));
+        setAlert({ message: "Classe deletada com sucesso!", type: "success" });
+      })
+      .catch((error) => {
+        console.error("Erro ao deletar classe:", error);
+      });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0a1a] text-white">
       <Header />
@@ -45,7 +58,7 @@ export default function Classes() {
 
         <main className="flex-1 p-6">
           <div className="flex space-x-6 border-b border-gray-700">
-            <Tabs tabs={registerTabs} />
+            <Tabs tabs={classesTabs} />
           </div>
           {/* list classes */}
           <div className="pt-6 h-full">
@@ -59,14 +72,19 @@ export default function Classes() {
                       href={`/register/classes/students`} 
                       key={classroom.id} 
                       className="flex items-center justify-between w-full"
-                      onClick={() => ClassesService.selectClassId(classroom.id)}
+                      onClick={() => {
+                        ClassesService.selectClassId(classroom.id)
+                        ClassesService.selectClassName(classroom.name)
+                      }}
                     >
                       <p>{classroom.name}</p>
+                    </Link>
                       <DropdownMenu
                         onEdit={() => router.push(`/register/classes/${classroom.id}`)}
-                        onDelete={() => console.log("Deletar classe")}
+                        onDelete={() => {
+                          handleDeleteClass(classroom.id);
+                        }}
                       />
-                    </Link>
                   </div>
                 ))}               
               </div>
@@ -74,6 +92,13 @@ export default function Classes() {
           </div>
 
           <FloatingButton onClick={() => console.log("Botão clicado!")}/>
+          {alert && (
+            <AlertPopup 
+              message={alert.message} 
+              type={alert.type} 
+              onClose={() => setAlert(null)}
+            />
+          )}
 
         </main>
 

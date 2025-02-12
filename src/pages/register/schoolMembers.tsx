@@ -15,7 +15,7 @@ const registerTabs = [
 ];
 
 export default function SchoolMembers() {
-  const [schoolMembers, setSchoolMembers] = useState<{ id: string; name: string; role: string }[]>([]);
+  const [schoolMembers, setSchoolMembers] = useState<{ id: string; firstName: string; role: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const roleNames: Record<string, string> = {
@@ -65,7 +65,7 @@ export default function SchoolMembers() {
                   <tbody>
                     {schoolMembers.map((member, index) => (
                       <tr key={index} className="border border-gray-700">
-                        <td className="border border-gray-700 px-4 py-2">{member.name}</td>
+                        <td className="border border-gray-700 px-4 py-2">{member.firstName}</td>
                         <td className="border border-gray-700 px-4 py-2">{roleNames[member.role]}</td>
                       </tr>
                     ))}

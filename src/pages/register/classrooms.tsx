@@ -9,7 +9,7 @@ import DropdownMenu from "@/components/DropdownMenu";
 import { useRouter } from "next/navigation";
 import { ClassroomsService } from "@/services/ClassroomsService";
 
-const registerTabs = [
+const classroomsTabs = [
   { name: "Salas", path: "/register/classrooms" },
   { name: "Classes", path: "/register/classes" },
   { name: "Membros", path: "/register/schoolMembers" },
@@ -45,7 +45,7 @@ export default function Classrooms() {
 
         <main className="flex-1 p-6">
           <div className="flex space-x-6 border-b border-gray-700">
-            <Tabs tabs={registerTabs} />
+            <Tabs tabs={classroomsTabs} />
           </div>
           {/* list classrooms */}
           <div className="pt-6 h-full">
@@ -58,7 +58,10 @@ export default function Classrooms() {
                     <p>{classroom.name}</p>
                     <DropdownMenu
                         onEdit={() => router.push(`/register/classes/${classroom.id}`)}
-                        onDelete={() => console.log("Deletar aluno")}
+                        onDelete={() => {
+                          ClassroomsService.deleteClassroom(classroom.id);
+                          setClassrooms(classrooms.filter((c) => c.id !== classroom.id));
+                        }}
                       />
                   </div>
                 ))}
@@ -66,7 +69,13 @@ export default function Classrooms() {
             )}
           </div>
 
-          <FloatingButton onClick={() => console.log("Botão clicado!")}/>
+          <FloatingButton onClick={() => {
+            const classroomName = prompt("Digite o nome da sala");
+            if (classroomName) {
+              ClassroomsService.createClassroom(classroomName);
+              setClassrooms([...classrooms, { id: "new", name: classroomName }]);
+            }
+          }}/>
 
         </main>
 
