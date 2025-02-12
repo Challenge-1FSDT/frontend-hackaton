@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { FaGraduationCap } from "react-icons/fa";
-import * as api from "../services/api";
 import "../app/globals.css";
+import { SchoolService } from "@/services/SchoolService";
+import { AuthService } from "@/services/AuthService";
 
 export default function Schools() {
   const [schools, setSchools] = useState<{ id: string; name: string }[]>([]);
@@ -10,13 +11,13 @@ export default function Schools() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!api.AuthService.isAuthenticated()) {
+    if (!AuthService.isAuthenticated()) {
       router.push("/");
       return;
     }
 
-    api.SchoolService.getSchools()
-      .then((data) => {        
+    SchoolService.getSchools()
+      .then((data) => {
         const allSchools = data.data;
         
         setSchools(allSchools);

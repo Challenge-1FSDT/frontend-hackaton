@@ -3,17 +3,16 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import * as api from "../services/api";
+import { AuthService } from "@/services/AuthService";
+import { SubjectService } from "@/services/SubjectService";
 
 export default function Subject() {
-  // select subject from api
-  // display subject content
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    if (!api.AuthService.isAuthenticated()) {
+    if (!AuthService.isAuthenticated()) {
       router.push("/");
       return;
     }
@@ -24,9 +23,10 @@ export default function Subject() {
       return;
     }
 
-    api.SubjectService.getSubject(selectedSubject)
+    SubjectService.getSubject(selectedSubject)
       .then((data) => {
-        setSubject(data.data);
+        const allSubjects = { ...data };
+        setSubject(allSubjects);
         setLoading(false);
       })
       .catch((error) => {

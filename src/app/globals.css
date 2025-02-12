@@ -19,3 +19,11 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+#schedule .fc-col-header tr {
+  background-color: #0a0a1a;
+}
+
+#schedule .fc-event-title-container {
+  background-color: #6366f1;
+}

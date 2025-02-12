@@ -4,23 +4,26 @@ import "../app/globals.css";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
-import * as api from '../services/api';
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
+import { AuthService } from "@/services/AuthService";
+import { CampusService } from "@/services/CampusService";
 
 export default function Campus () {
-  const [campus, setCampus] = useState<{ id: string; name: string; fantasyName: string; address: string; city: string; state: string }[]>([]);
+  const [campus, setCampus] = useState<{ id: string; name: string; fantasyName: string; address: string; city: string; state: string; taxId: string; }[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (!api.AuthService.isAuthenticated()) {
+    if (!AuthService.isAuthenticated()) {
       router.push("/");
       return;
     }
     
-    api.CampusService.getCampus()
+    CampusService.getCampus()
       .then((data) => {
-        const allCampus = { ...data };
+        const allCampus = Array.isArray(data) ? data : [data];
+        setLoading(false);
         setCampus(allCampus);
       })
       .catch((error) => {
@@ -36,16 +39,25 @@ export default function Campus () {
         <Sidebar />
         <main className="flex-1 p-6">
           <h2 className="text-xl font-semibold text-indigo-400">Campus</h2>
-          <p className="mt-2 text-gray-300">Aqui ficará a lista de campus.</p>
 
           <ul className="mt-4 space-y-4">
-            {campus.map((item: { id: string; name: string; fantasyName: string; address: string; city: string; state: string }) => (
-              <li key={item.id} className="bg-[#0c0c24] p-4 rounded-md">
-                <h3 className="text-lg font-semibold text-indigo-400">{item.name}</h3>
-                <p className="mt-2 text-gray-300">{item.fantasyName}</p>
-                <p className="mt-2 text-gray-300">{item.address}, {item.city} - {item.state}</p>
+            {loading && (
+              <p className="text-white text-center">Carregando...</p>
+            )}
+
+            {!loading && campus.map((campus) => (
+              <li key={campus.id} className="bg-[#12122b] p-4 rounded-md">
+                <p className="text-white font-semibold">{campus.name}</p>
+                <p className="text-gray-400">{campus.fantasyName}</p>
+                <p className="text-gray-400">{campus.taxId}</p>
+                <p className="text-gray-400">{campus.address}</p>
+                <p className="text-gray-400">{campus.city} - {campus.state}</p>
               </li>
             ))}
+            
+            {!loading && campus.length === 0 && (
+              <p className="text-white text-center">Nenhum campus encontrado.</p>
+            )}
           </ul>
         </main>
       </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import * as api from "../services/api";
+import { AuthService } from "@/services/AuthService";
 import "../app/globals.css";
 
 export default function LoginPage() {
@@ -16,7 +16,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await api.AuthService.login(email, password);
+      const response = await AuthService.login(email, password);
 
       if (response) {
         setError(response);
